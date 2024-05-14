@@ -34,12 +34,12 @@ async def start(update: Update, context: CallbackContext) -> None:
 # Hàm xử lý lệnh /help
 async def help_command(update: Update, context: CallbackContext) -> None:
     help_text = (
-        "/start - Khởi động bot và nhận thông báo chào mừng\n"
-        "/help - Hiển thị danh sách các lệnh và giải thích\n"
-        "/access_database - Yêu cầu nhập mã bảo mật để truy cập đường link\n"
-        "/cancel - Hủy bỏ hành động hiện tại\n"
-        "/group - Nhận đường link để truy cập nhóm Telegram\n"
-        "/about - Hiển thị thông tin về bot và dẫn đến trang web của bạn"
+        "/start - Start.\n"
+        "/help - Displays a list of commands and explanations\n"
+        "/access_database - Requires entering a security code to access the link.\n"
+        "/cancel - Cancel the current action.\n"
+        "/group - Nhận đường link để truy cập nhóm Telegram.\n"
+        "/about - About the developer."
     )
     await update.message.reply_text(help_text)
 
