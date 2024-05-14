@@ -23,13 +23,14 @@ LINKS = [
 ]
 
 # Telegram group link
-GROUP_LINK = "LINK_GROUP"
+GROUP_LINK = "https://t.me/"
 
 # About link
 ABOUT_LINK = "https://thredeisacoder.github.io"
 
 # Store message IDs to delete later
 user_messages = {}
+access_database_messages = {}
 
 # Track messages
 async def track_message(update: Update, message_id: int):
@@ -37,6 +38,13 @@ async def track_message(update: Update, message_id: int):
     if chat_id not in user_messages:
         user_messages[chat_id] = []
     user_messages[chat_id].append(message_id)
+
+# Track messages related to access_database
+async def track_access_database_message(update: Update, message_id: int):
+    chat_id = update.message.chat_id
+    if chat_id not in access_database_messages:
+        access_database_messages[chat_id] = []
+    access_database_messages[chat_id].append(message_id)
 
 # Command /start handler
 async def start(update: Update, context: CallbackContext) -> None:
@@ -84,20 +92,26 @@ async def access_database(update: Update, context: CallbackContext) -> int:
 
 # Handle the security code input
 async def verify_code(update: Update, context: CallbackContext) -> int:
-    await track_message(update, update.message.message_id)
     user_code = update.message.text
     chat_id = update.message.chat_id
-    
+    message_id = update.message.message_id
+
+    # Delete the user's message containing the security code
+    try:
+        await context.bot.delete_message(chat_id=chat_id, message_id=message_id)
+    except Exception as e:
+        logging.error(f"Error deleting user message: {e}")
+
     if user_code == CORRECT_CODE:
         msg = await update.message.reply_text('Access granted. Here are your links:')
-        await track_message(update, msg.message_id)
+        await track_access_database_message(update, msg.message_id)
         for link in LINKS:
             msg = await update.message.reply_text(link)
-            await track_message(update, msg.message_id)
+            await track_access_database_message(update, msg.message_id)
         return ConversationHandler.END
     else:
         msg = await update.message.reply_text('Incorrect code. Please try again or type /cancel to stop.')
-        await track_message(update, msg.message_id)
+        await track_access_database_message(update, msg.message_id)
         return CODE
 
 # Cancel the authentication process
@@ -118,6 +132,17 @@ async def cleanup_all_messages(update: Update, context: CallbackContext):
                 logging.error(f"Error deleting message: {e}")
         del user_messages[chat_id]
 
+# Cleanup function to delete access database messages
+async def cleanup_access_database_messages(update: Update, context: CallbackContext):
+    chat_id = update.message.chat_id
+    if chat_id in access_database_messages:
+        for msg_id in access_database_messages[chat_id]:
+            try:
+                await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+            except Exception as e:
+                logging.error(f"Error deleting message: {e}")
+        del access_database_messages[chat_id]
+
 # Command /clear handler
 async def clear_command(update: Update, context: CallbackContext) -> None:
     await cleanup_all_messages(update, context)
@@ -127,6 +152,11 @@ async def clear_command(update: Update, context: CallbackContext) -> None:
         await context.bot.delete_message(chat_id=update.message.chat_id, message_id=confirmation_msg.message_id)
     except Exception as e:
         logging.error(f"Error deleting confirmation message: {e}")
+
+# New message handler to clean up access database messages
+async def new_message_handler(update: Update, context: CallbackContext) -> None:
+    await cleanup_access_database_messages(update, context)
+    await track_message(update, update.message.message_id)
 
 def main():
     # Replace 'YOUR_TOKEN' with your actual bot token
@@ -158,8 +188,9 @@ def main():
 
     application.add_handler(conv_handler)
 
-    # Add handler to track all user messages, including commands
-    application.add_handler(MessageHandler(filters.ALL, lambda update, context: track_message(update, update.message.message_id)))
+    # Add handler to clean up access database messages on new message or command
+    application.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, new_message_handler))
+    application.add_handler(MessageHandler(filters.COMMAND, new_message_handler))
 
     # Start the bot
     application.run_polling()
