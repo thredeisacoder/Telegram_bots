@@ -13,17 +13,17 @@ logging.basicConfig(
 CODE = range(1)
 
 # Correct security code
-CORRECT_CODE = "anonymous"
+CORRECT_CODE = "CODE"
 
 # Links to be displayed if the correct code is entered
 LINKS = [
-    "https://docs.google.com/spreadsheets/d/1SalvGgcrTqUDulcwhBuRmedKP7sbElqcUtaHY4i6qgA/edit?fbclid=IwAR1hhGdN9BUqNhlQxFSpeY9qD73ePAnv1Vsiydmr2VSS5S3039Bze4hbslE&pli=1#gid=1641061892",
-    "https://docs.google.com/spreadsheets/d/1FnNM_-aogzOtS6ifsHT1UMoUt-bx_Fbz8FJG-CHEa48/edit#gid=1106603486",
-    "https://docs.google.com/spreadsheets/d/1GRsPgR9OKssdN-C4Ft_x-k5HyseN62spap7ywFiMM8k/edit#gid=263690955"
+    "LINK_1",
+    "LINK_2",
+    "LINK_3"
 ]
 
 # Telegram group link
-GROUP_LINK = "https://t.me/+JEZed5ICMD1kYjI1"
+GROUP_LINK = "LINK_GROUP"
 
 # About link
 ABOUT_LINK = "https://thredeisacoder.github.io"
