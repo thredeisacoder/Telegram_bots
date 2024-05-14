@@ -1,3 +1,6 @@
+# Written by Threde
+# Contact me: https://thredeisacoder.github.io
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, ConversationHandler, filters, CallbackContext
 import logging
@@ -17,16 +20,16 @@ CORRECT_CODE = "CODE"
 
 # Links to be displayed if the correct code is entered
 LINKS = [
-    "LINK_1",
-    "LINK_2",
-    "LINK_3"
+    ("TikTok", "https://docs.google.com/spreadsheets/"), # Replace link
+    ("Ebay", "https://docs.google.com/spreadsheets/"), # Replace link
+    ("Stickers", "https://docs.google.com/spreadsheets/") # Replace link
 ]
 
 # Telegram group link
-GROUP_LINK = "https://t.me/"
+GROUP_LINK = "https://t.me/" # Replace link
 
 # About link
-ABOUT_LINK = "https://thredeisacoder.github.io"
+ABOUT_LINK = "https://thredeisacoder.github.io" # Replace link
 
 # Store message IDs to delete later
 user_messages = {}
@@ -105,9 +108,13 @@ async def verify_code(update: Update, context: CallbackContext) -> int:
     if user_code == CORRECT_CODE:
         msg = await update.message.reply_text('Access granted. Here are your links:')
         await track_access_database_message(update, msg.message_id)
-        for link in LINKS:
-            msg = await update.message.reply_text(link)
-            await track_access_database_message(update, msg.message_id)
+
+        # Create a single message with all buttons
+        buttons = [[InlineKeyboardButton(text, url=url)] for text, url in LINKS]
+        reply_markup = InlineKeyboardMarkup(buttons)
+        msg = await update.message.reply_text('Click the buttons below to access the links:', reply_markup=reply_markup)
+        await track_access_database_message(update, msg.message_id)
+        
         return ConversationHandler.END
     else:
         msg = await update.message.reply_text('Incorrect code. Please try again or type /cancel to stop.')
