@@ -41,7 +41,7 @@ async def track_message(update: Update, message_id: int):
 # Command /start handler
 async def start(update: Update, context: CallbackContext) -> None:
     await track_message(update, update.message.message_id)
-    msg = await update.message.reply_text('I'm Alex, a secret agent, delighted to serve you!')
+    msg = await update.message.reply_text('Hi! I am your bot. How can I help you?')
     await track_message(update, msg.message_id)
 
 # Command /help handler
@@ -130,7 +130,7 @@ async def clear_command(update: Update, context: CallbackContext) -> None:
 
 def main():
     # Replace 'YOUR_TOKEN' with your actual bot token
-    application = Application.builder().token("6828748542:AAEwhxdMfmapbx8aSHBrhm-GI9MBANH9bqU").build()
+    application = Application.builder().token("TOKEN_API").build()
 
     # Add handler for the /start command
     application.add_handler(CommandHandler("start", start))
