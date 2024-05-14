@@ -41,7 +41,7 @@ async def track_message(update: Update, message_id: int):
 # Command /start handler
 async def start(update: Update, context: CallbackContext) -> None:
     await track_message(update, update.message.message_id)
-    msg = await update.message.reply_text('Hi! I am your bot. How can I help you?')
+    msg = await update.message.reply_text('I'm Alex, a secret agent, delighted to serve you!')
     await track_message(update, msg.message_id)
 
 # Command /help handler
